@@ -45,13 +45,44 @@ app.get('/users/:id', (req, res) => {
     Users.findById(id).then(doc => {
         if(!doc) {
             res.status(404).send();
-        }
+        };
         res.status(200).send(doc);
     }, err => {
-        res.status(400).send();
+        res.status(400).send(err);
     });
 });
 
+app.delete('/users/:id', (req, res) => {
+    const id = req.params.id;
+    if(!ObjectID.isValid(id)) {
+        res.status(404).send();
+    };
+
+    Users.findByIdAndRemove(id).then(doc => {
+        if(!doc) {
+            res.status(404).send();
+        };
+        res.status(200).send(doc);
+    }, err => {
+        res.status(400).send(err);
+    });
+});
+
+app.patch('/users/:id', (req, res) => {
+    const id = req.params.id;
+    if(!ObjectID.isValid(id)) {
+        res.status(404).send();
+    };
+    const { name, age, gender } = req.body;
+    Users.findByIdAndUpdate(id, { $set: { name, age, gender } }, { new: true }).then(doc => {
+        if(!doc) {
+            res.status(404).send();
+        };
+        res.status(200).send(doc);
+    }, err => {
+        res.status(400).send(err);
+    });
+});
 
 app.listen(port, () => {
     console.log(`Server is up on port ${port}`);
